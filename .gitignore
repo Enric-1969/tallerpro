@@ -1,0 +1,12 @@
+# Archivo de variables de entorno (claves secretas)
+.env
+
+# Ejecutables de Go y compilados
+*.exe
+/frontend/node_modules/
+/internal/ui/node_modules/
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
