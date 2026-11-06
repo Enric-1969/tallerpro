@@ -1,12 +1,26 @@
 # Archivo de variables de entorno (claves secretas)
 .env
 
-# Ejecutables de Go y compilados
-*.exe
-/frontend/node_modules/
-/internal/ui/node_modules/
-
 # Base de datos local
 *.db
 *.sqlite
 *.sqlite3
+
+# --- Archivos del Sistema Operativo (Windows) ---
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Archivos temporales y configuraciones de VS Code ---
+.vscode/
+.idea/
+*.log
+
+# --- Binarios y ejecutables compilados de Go ---
+*.exe
+*.test
+mi-servidor
+mi-proyecto
+
+/frontend/node_modules/
+/internal/ui/node_modules/
