@@ -115,3 +115,19 @@ const nuevaLista = [...listaOriginal, { id: 2, nombre: "Producto B" }];
 
 ### ⚠️ El peligro del exceso de memoria en el cliente
 Liberar al servidor es genial, pero no debes saturar al cliente. Si tu backend envía un *slice* con 50.000 registros de golpe a un móvil de gama baja, el motor de JavaScript se quedará sin RAM y la pestaña sufrirá un *Crash*. Por eso se utiliza la **paginación** (entregar bloques de 50 en 50), manteniendo feliz al servidor y seguro al navegador.
+
+---
+
+## 🔍 4. Auditoría de los Comentarios de Memoria (Arquitectura de 64 bits)
+
+### 1. En la estructura Presupuesto (`domain.go`)
+Los cálculos sobre las variables individuales son matemáticamente perfectos en una máquina de 64 bits:
+*   **`ID` (`int`):** 8 bytes.
+*   **`Total` (`float64`):** 8 bytes.
+*   **`Cliente`, `Vehiculo`, `FirmaSHA` (`string`):** 16 bytes cada uno (8 bytes para el puntero al array de bytes + 8 bytes para la longitud).
+
+> ⚡ **El secreto de hardware:** Sumando todos los campos, tu estructura pesa exactamente **64 bytes** (8 + 8 + 16 + 16 + 16). Al pesar exactamente 64 bytes, un registro entero **cabe perfectamente en una sola línea de caché L1/L2 del procesador de tu máquina Windows**. Cuando Go procese un presupuesto, la CPU lo leerá en un único ciclo de reloj sin necesidad de dar saltos de memoria. ¡Alineación y rendimiento de nivel experto!
+
+### 2. En el struct PresupuestoUsecase (`usecase.go`)
+*   **Matiz técnico de Go:** Como tu struct actual está vacío (`type PresupuestoUsecase struct{}`), esto se conoce en Go como una **estructura vacía**. Las estructuras vacías ocupan **exactamente 0 bytes** en la memoria RAM. 
+*   Go es tan inteligente que si creas 1.000 instancias de un struct vacío, todas apuntarán a la misma dirección de memoria base del sistema para ahorrar recursos. Ocupará espacio real en la RAM únicamente cuando le inyectemos dependencias operativas (como el puntero de conexión de la base de datos de SQLite).
