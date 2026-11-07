@@ -6,32 +6,29 @@ import (
 	"tallermecanico/internal/domain"
 )
 
-// PresupuestoUsecase contiene las dependencias (por ahora pura lógica)
-type PresupuestoUsecase struct{} //0 bytes (por estar vacia)
+type PresupuestoUsecase struct{}
 
-// NewPresupuestoUsecase inicializa el caso de uso
 func NewPresupuestoUsecase() *PresupuestoUsecase {
 	return &PresupuestoUsecase{}
 }
 
-// FirmarPresupuesto genera un hash criptográfico SHA-256 de forma ultraeficiente
+// FirmarPresupuesto genera un hash criptográfico SHA-256 adaptado al nuevo modelo
 func (u *PresupuestoUsecase) FirmarPresupuesto(p *domain.Presupuesto) string {
-	datosParaFirmar := fmt.Sprintf("%d-%s-%s-%.2f", p.ID, p.Cliente, p.Vehiculo, p.Total)
+	// Usamos la matrícula del vehículo o datos disponibles en el struct actualizado
+	datosParaFirmar := fmt.Sprintf("%d-%s-%.2f", p.ID, p.Vehiculo.Matricula, p.Total)
 
-	// Criptografía nativa en Go (Seguridad y velocidad en el Stack de memoria)
 	hash := sha256.Sum256([]byte(datosParaFirmar))
-
 	return fmt.Sprintf("%x", hash)
 }
 
-// BuscarDuplicados usa tu mapa optimizado O(N) para evitar fraudes en la lista de presupuestos
+// BuscarDuplicados ajustado al ID de tipo uint de gorm.Model
 func (u *PresupuestoUsecase) BuscarDuplicados(lista []domain.Presupuesto) bool {
-	// 🎁 Aplicamos tu truco de optimización: preasignamos el mapa en la RAM
-	vistos := make(map[int]bool, len(lista))
+	// Cambiamos la clave del mapa a uint para que coincida con gorm.Model
+	vistos := make(map[uint]bool, len(lista))
 
 	for _, p := range lista {
 		if vistos[p.ID] {
-			return true // Encontró un ID duplicado (Alerta de fraude)
+			return true // ID duplicado detectado
 		}
 		vistos[p.ID] = true
 	}
