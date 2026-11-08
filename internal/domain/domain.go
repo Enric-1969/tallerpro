@@ -19,11 +19,14 @@ import (
 )
 
 // 👤 Modelo de Cliente (Persistencia SQLite)
+// 👤 Modelo de Cliente (Persistencia SQLite - Universal para Particulares y Autónomos)
 type Cliente struct {
-	gorm.Model            // ID (uint/8 bytes)
-	Nombre     string     `json:"nombre" gorm:"not null"` // 16 bytes (puntero + longitud)
-	Telefono   string     `json:"telefono"`               // 16 bytes (puntero + longitud)
-	Vehiculos  []Vehiculo `json:"vehiculos"`              // Slice de vehículos asociados
+	gorm.Model
+	Nombre      string     `json:"nombre" gorm:"not null"` // Nombre del contacto (ej: "Juan Pérez")
+	Telefono    string     `json:"telefono"`
+	CifDni      string     `json:"cifDni" gorm:"unique;not null"` // DNI del particular o CIF del autónomo
+	RazonSocial string     `json:"razonSocial"`                   // Nombre de la empresa (vacío si es particular)
+	Vehiculos   []Vehiculo `json:"vehiculos"`
 }
 
 // 🚗 Modelo de Vehículo (Persistencia SQLite)
