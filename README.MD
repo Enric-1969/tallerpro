@@ -24,11 +24,14 @@ go get [github.com/glebarez/sqlite](https://github.com/glebarez/sqlite)       # 
 internal/domain/domain.go        
 # Definición centralizada de tipos y estructuras de datos
 
-internal/repository/sqlite.go   
-    # Conexión SQLite pura sin CGO y migraciones automáticas de GORM.
-    # Usa el módulo correcto: tallermecanico/internal/domain coincide exactamente con la línea module tallermecanico que tienes definida en tu archivo go.mod.
-    # SQLite puro sin CGO: Utiliza [github.com/glebarez/sqlite](https://github.com/glebarez/sqlite) para que no tengas problemas de compilación en Windows.
-    # Migraciones automáticas: Con db.AutoMigrate, GORM creará de forma inteligente las tablas para Cliente, Vehiculo y Presupuesto en el archivo local taller.db la primera vez que ejecutes el programa.
+### internal/repository/sqlite.go   
+Conexión de persistencia robusta utilizando SQLite puro (sin dependencias de CGO) y migraciones automáticas de GORM.
+- **Resiliencia de Conexión:** Implementa un mecanismo de reintentos exponenciales (*Backoff*) de 500ms ante fallos de E/S o bloqueos concurrentes.
+- **Diseño Desacoplado:** Elimina cierres inesperados de la aplicación (`log.Fatal`) delegando el manejo de errores hacia capas superiores para proteger la interfaz gráfica.
+- **Control de Concurrencia:** Configuración estricta del pool (`SetMaxOpenConns(1)`) para mitigar excepciones de archivo bloqueado (`database is locked`) nativas de SQLite.
+
+### internal/usecase/presupuesto.go 
+
 
 internal/usecase/presupuesto.go        
 # Implementar lógica de firma criptográfica y mapa optimizado O(N) en el caso de uso.
